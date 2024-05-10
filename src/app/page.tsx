@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { PowerGlitch } from "powerglitch";
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { PowerGlitch } from 'powerglitch';
 
 interface ImageData {
   base64image: string;
@@ -20,13 +20,13 @@ export default function Home(): JSX.Element {
       return Math.random() * (max - min) + min;
     };
 
-    PowerGlitch.glitch(".glitch", {
-      playMode: "always",
+    PowerGlitch.glitch('.glitch', {
+      playMode: 'always',
       hideOverflow: true,
       timing: {
         duration: 1000,
         iterations: 1,
-        easing: "ease-in-out",
+        easing: 'ease-in-out',
       },
       glitchTimeSpan: {
         start: 0.4,
@@ -48,7 +48,7 @@ export default function Home(): JSX.Element {
   };
 
   const pullImage = (): void => {
-    setImage1("/images/1.png"); // Update the path to "/images/1.png" if it is located in the "/public/images" directory
+    setImage1('/images/1.png'); // Update the path to "/images/1.png" if it is located in the "/public/images" directory
   };
 
   const calculateMaxWindowSize = (): number => {
@@ -59,9 +59,9 @@ export default function Home(): JSX.Element {
   };
 
   const makeApiCall = async (): Promise<void> => {
-    setIsWaiting(true);
-    const response = await fetch("/api/generate", {
-      method: "GET",
+    setIsWaiting(false);
+    const response = await fetch('/api/generate', {
+      method: 'GET',
     });
     const data: ImageData = await response.json();
 
@@ -87,30 +87,24 @@ export default function Home(): JSX.Element {
   return (
     <div
       style={{
-        background: "black",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
+        background: 'black',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
       }}
     >
       {/* <button onClick={makeApiCall}>Generate AI Image</button> */}
       {/* <button onClick={pullImage}>Generate and Transition</button> */}
-      <div className='image'>
+      <div className="image">
         {!isWaiting && image1 ? (
           <div>
-            <img
-              className='glitch'
-              src={image1}
-              width={calculateMaxWindowSize()}
-              height={calculateMaxWindowSize()}
-              alt='AI generated image'
-            />
+            <img className="glitch" src={image1} width={calculateMaxWindowSize()} height={calculateMaxWindowSize()} alt="AI generated image" />
             <div>seed: {seed}</div>
             {/* <button onClick={glitchScript}>Glitch</button> */}
           </div>
         ) : isWaiting ? (
-          <div className='image__placeholder'>Loading...</div>
+          <div className="image__placeholder">Loading...</div>
         ) : null}
       </div>
     </div>
