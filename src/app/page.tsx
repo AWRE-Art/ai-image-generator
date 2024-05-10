@@ -14,6 +14,7 @@ export default function Home(): JSX.Element {
   const [image1, setImage1] = useState<string | null>(null);
   const [seed, setSeed] = useState<string | null>(null);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [isServerUp, setIsServerUp] = useState(false);
 
   const glitchScript = (): void => {
     const getRandomValue = (min: number, max: number): number => {
@@ -59,17 +60,26 @@ export default function Home(): JSX.Element {
   };
 
   const makeApiCall = async (): Promise<void> => {
-    setIsWaiting(false);
-    const response = await fetch('/api/generate', {
-      method: 'GET',
-    });
-    const data: ImageData = await response.json();
+    setIsWaiting(false); // Set to true at the beginning of the call
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`); // Throw error if response not OK
+      }
+      const data: ImageData = await response.json();
 
-    const img = `data:image/jpeg;base64,` + data.base64image;
-    setImageData(data);
-    setImage1(img);
-    setSeed(data.seed);
-    setIsWaiting(false);
+      const img = `data:image/jpeg;base64,` + data.base64image;
+      setImageData(data);
+      setImage1(img);
+      setSeed(data.seed);
+      setIsServerUp(true); // Set to true on successful API call
+    } catch (error) {
+      console.error('API call failed:', error);
+      setIsServerUp(false); // Set to false if API call fails
+    }
+    setIsWaiting(false); // Set to false at the end of the function
   };
 
   useEffect(() => {
@@ -94,19 +104,21 @@ export default function Home(): JSX.Element {
         minHeight: '100vh',
       }}
     >
-      {/* <button onClick={makeApiCall}>Generate AI Image</button> */}
-      {/* <button onClick={pullImage}>Generate and Transition</button> */}
-      <div className="image">
-        {!isWaiting && image1 ? (
-          <div>
-            <img className="glitch" src={image1} width={calculateMaxWindowSize()} height={calculateMaxWindowSize()} alt="AI generated image" />
-            <div>seed: {seed}</div>
-            {/* <button onClick={glitchScript}>Glitch</button> */}
-          </div>
-        ) : isWaiting ? (
-          <div className="image__placeholder">Loading...</div>
-        ) : null}
-      </div>
+      {!isServerUp ? (
+        <div style={{ color: 'red', fontSize: '24px' }}>SERVER DOWN</div>
+      ) : (
+        <div className="image">
+          {!isWaiting && image1 ? (
+            <div>
+              <img className="glitch" src={image1} width={calculateMaxWindowSize()} height={calculateMaxWindowSize()} alt="AI generated image" />
+              <div>seed: {seed}</div>
+              {/* <button onClick={glitchScript}>Glitch</button> */}
+            </div>
+          ) : isWaiting ? (
+            <div className="image__placeholder">Loading...</div>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

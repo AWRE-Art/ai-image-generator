@@ -1,19 +1,16 @@
 // import { NextResponse } from "next/server";
-import { requestAIImage } from "@neuralkit/ai-art-helper";
-import { NextRequest } from "next/server";
+import { requestAIImage } from '@neuralkit/ai-art-helper';
+import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  // const body = req.body;
-  // environmentSetup;
-  // batchRequests(config, 5);
+  try {
+    const imgData = await requestAIImage();
+    return new Response(JSON.stringify(imgData));
+  } catch (error) {
+    // Log the error or handle it as needed
+    console.error('Failed to fetch image:', error);
 
-  // const directoryPath = join(process.cwd(), "my_directory");
-  // const filePath = join("/tmp", "server_test.txt");
-  // console.log(filePath);
-  // fs.writeFileSync(filePath, "????");
-
-  // console.log(filePath);
-  const imgData = await requestAIImage();
-
-  return new Response(JSON.stringify(imgData));
+    // Return a response with a specific error code, e.g., 503 Service Unavailable
+    return new Response('Unable to connect to the image service', { status: 503 });
+  }
 }
